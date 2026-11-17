@@ -1,0 +1,9 @@
+scratch/
+.venv*
+*.mp3
+*.wav
+bible/
+docs/
+skills/
+*.log
+daily_update*.log

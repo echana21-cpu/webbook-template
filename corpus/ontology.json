@@ -1,0 +1,35 @@
+{
+  "project": "WebBook-Template",
+  "ontology_standard": "TKG-Grade Standalone v1.0",
+  "concepts": {
+    "spiritual_poverty_ptochos": {
+      "id": "concept:spiritual_poverty_ptochos",
+      "name": "심령의 가난과 지불불능 (프토코스)",
+      "name_en": "Spiritual Poverty and Insolvency toward the World (Ptochos)",
+      "category": "제자도/영성",
+      "category_en": "Discipleship/Spirituality",
+      "description": "세상에 대해 더 이상 쓸 마음이 없는 지불불능(Default)을 선언하고, 하나님 앞에서 전적인 영적 파산자임을 고백하는 심령",
+      "description_en": "Declaring complete insolvency (Default) of the heart toward worldly concerns and confessing total spiritual bankruptcy before God"
+    },
+    "sabbatismos_true_rest": {
+      "id": "concept:sabbatismos_true_rest",
+      "name": "사바티스모스와 참된 안식",
+      "name_en": "Sabbatismos and True Sabbath Rest",
+      "category": "성경신학/종말론",
+      "category_en": "Biblical Theology/Eschatology",
+      "description": "자기 의와 율법적 노동을 그치고 하나님으로 먼저 채움 받는 창조 안식의 원형과 구속의 완성에 참여하는 영원한 축제",
+      "description_en": "Ceasing from self-righteous labor to partake in the primordial creation rest and eschatological Sabbath celebration, filled with God Himself"
+    }
+  },
+  "claims": {
+    "s01_mat:claim:poor_in_spirit_kingdom": {
+      "session_id": "s01-mat5-3",
+      "heading": "심령의 가난과 현재적 천국의 소유",
+      "heading_en": "Poverty in Spirit and Present Possession of the Kingdom",
+      "claim": "심령의 가난(πτωχός)은 세상에 대한 지불불능(Default) 선언이며, 세상에 쓸 마음을 비워 하나님께만 집중할 때 천국은 죽은 후가 아닌 지금 현재 성도의 소유가 된다.",
+      "claim_en": "Poverty in spirit (ptochos) is a declaration of default toward the world; when the heart is emptied of worldly attachments for God alone, the Kingdom of Heaven becomes the believer's present possession now."
+    }
+  },
+  "edges": [],
+  "concept_edges": []
+}

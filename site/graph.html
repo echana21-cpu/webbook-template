@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ko" class="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>실시간 신학 지식 그래프 — 성경 강해 설교 웹북 (샘플)</title>
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/d3.v7.min.js"></script>
+<style>
+.graph-container { width: 100%; height: calc(100vh - 4.5rem); position: relative; background: var(--bg-primary); overflow: hidden; }
+svg.graph-svg { width: 100%; height: 100%; display: block; }
+.g-node { cursor: pointer; stroke: var(--bg-surface); stroke-width: 2.5px; transition: r 0.2s, stroke-width 0.2s; }
+.g-node.session { fill: var(--brand-brown); }
+.g-node.concept { fill: var(--accent-color); }
+.g-node:hover { stroke: var(--accent-hover); stroke-width: 4px; }
+.g-link { stroke: var(--border-color); stroke-opacity: 0.7; stroke-width: 2px; }
+.g-link.session-concept { stroke-dasharray: 4,4; stroke-opacity: 0.45; stroke-width: 1.5px; }
+.g-label { font-family: var(--font-sans); font-size: 0.82rem; font-weight: 600; fill: var(--text-primary); pointer-events: none; text-shadow: 0 1px 3px rgba(255,255,255,0.9); }
+.graph-ctrls { position: absolute; top: 1.2rem; right: 1.2rem; z-index: 10; display: flex; gap: 0.5rem; }
+.graph-legend { position: absolute; bottom: 1.5rem; left: 1.5rem; z-index: 10; background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 8px; padding: 0.75rem 1rem; box-shadow: var(--shadow-sm); font-family: var(--font-sans); font-size: 0.8rem; display: flex; flex-direction: column; gap: 0.4rem; }
+.legend-item { display: flex; align-items: center; gap: 0.5rem; }
+.legend-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+.legend-dot.session { background: var(--brand-brown); }
+.legend-dot.concept { background: var(--accent-color); }
+.graph-tooltip { position: absolute; display: none; background: var(--bg-surface); border: 1px solid var(--border-color); padding: 0.75rem 1rem; border-radius: 8px; box-shadow: var(--shadow-md); font-family: var(--font-sans); font-size: 0.85rem; z-index: 100; max-width: 300px; pointer-events: none; line-height: 1.5; }
+</style>
+</head>
+<body>
+<header class="top-header">
+  <div class="top-header-inner">
+    <a class="top-brand" href="index.html">
+      <span class="brand-title">성경 강해 설교 웹북 (샘플)</span>
+    </a>
+    <nav class="top-nav">
+      <a class="top-nav-item" href="index.html">강해 목차</a>
+      <a class="top-nav-item" href="index.html#theology">주제별 신학</a>
+      <a class="top-nav-item" href="lectures.html">강의 자료</a>
+      <a class="top-nav-item active" href="graph.html">실시간 지식 그래프</a>
+      <div class="lang-toggle"><span class="lang-btn active">KR</span><a class="lang-btn" href="en/index.html">EN</a><button type="button" class="lang-btn" id="cnTranslateBtn" title="中文翻译">CN</button></div>
+    </nav>
+  </div>
+</header>
+<button id="navToggle" class="nav-toggle" aria-label="목차">목차</button>
+<div id="backdrop" class="backdrop" hidden></div>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+  <div class="side-nav" style="padding-top: 1.25rem;">
+    <div class="sidebar-action-btns">
+      <a class="sidebar-nav-btn" href="index.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle; display:inline-block; flex-shrink:0;"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg><span>성경 강해 목차</span></a>
+      <a class="sidebar-nav-btn" href="index.html#theology"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle; display:inline-block; flex-shrink:0;"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg><span>주제별 신학 강의</span></a>
+      <a class="sidebar-nav-btn" href="lectures.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle; display:inline-block; flex-shrink:0;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg><span>강의 자료실</span></a>
+      <a class="sidebar-nav-btn active" href="graph.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle; display:inline-block; flex-shrink:0;"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg><span>실시간 지식 그래프</span></a>
+    </div>
+    <div class="nav-group-title">세부 강해 목록</div>
+    <div class="nav-category-header">
+      <span class="cat-title">구약</span>
+      <span class="cat-count">1개 강해</span>
+    </div>
+    <div class="nav-chapter-group open">
+      <button class="nav-chapter-header" aria-expanded="true">
+        <span class="ch-title">창세기</span>
+        <span class="ch-count">1개 강해</span>
+        <span class="ch-arrow">▼</span>
+      </button>
+      <div class="nav-chapter-list">
+        <a class="nav-item" href="genesis/s01-gen6-5-9.html">
+          <span>01. 창 6:5-9 하나님이 마음에 들어 하시는 삶</span>
+        </a>
+      </div>
+    </div>
+    <div class="nav-category-header">
+      <span class="cat-title">신약</span>
+      <span class="cat-count">1개 강해</span>
+    </div>
+    <div class="nav-chapter-group">
+      <button class="nav-chapter-header" aria-expanded="false">
+        <span class="ch-title">마태복음</span>
+        <span class="ch-count">1개 강해</span>
+        <span class="ch-arrow">▼</span>
+      </button>
+      <div class="nav-chapter-list">
+        <a class="nav-item" href="matthew/s01-mat5-3.html">
+          <span>01. 마 5:3 심령이 가난한 자의 복 — 지금 천국을 소유하는 삶</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</aside>
+<div class="main-col" style="padding:0; width:100%;">
+  <div class="graph-container">
+    <div class="graph-ctrls">
+      <button class="btn" onclick="zoomIn()">+</button>
+      <button class="btn" onclick="zoomOut()">-</button>
+      <button class="btn" onclick="resetZoom()">초기화</button>
+    </div>
+    <div class="graph-legend">
+      <div class="legend-item"><span class="legend-dot session"></span><strong>성경 강해 설교</strong></div>
+      <div class="legend-item"><span class="legend-dot concept"></span><strong>핵심 신학 개념</strong></div>
+    </div>
+    <div id="graphTooltip" class="graph-tooltip"></div>
+    <svg class="graph-svg" id="graphSvg"></svg>
+  </div>
+</div>
+</div>
+<script>
+const nodesData = [{"id": "s01-gen6-5-9", "label": "01. 창 6:5-9 하나님이 마음에 들어 하시는 삶", "group": "session", "url": "genesis/s01-gen6-5-9.html", "chapter": 6}, {"id": "s01-mat5-3", "label": "01. 마 5:3 심령이 가난한 자의 복 — 지금 천국을 소유하는 삶", "group": "session", "url": "matthew/s01-mat5-3.html", "chapter": 5}, {"id": "concept:spiritual_poverty_ptochos", "label": "심령의 가난과 지불불능 (프토코스)", "group": "concept", "category": "제자도/영성", "desc": "세상에 대해 더 이상 쓸 마음이 없는 지불불능(Default)을 선언하고, 하나님 앞에서 전적인 영적 파산자임을 고백하는 심령"}, {"id": "concept:sabbatismos_true_rest", "label": "사바티스모스와 참된 안식", "group": "concept", "category": "성경신학/종말론", "desc": "자기 의와 율법적 노동을 그치고 하나님으로 먼저 채움 받는 창조 안식의 원형과 구속의 완성에 참여하는 영원한 축제"}];
+const linksData = [{"source": "s01-gen6-5-9", "target": "concept:spiritual_poverty_ptochos", "relation": "포함 개념", "label": "", "type": "session-concept"}, {"source": "s01-gen6-5-9", "target": "concept:sabbatismos_true_rest", "relation": "포함 개념", "label": "", "type": "session-concept"}, {"source": "s01-mat5-3", "target": "concept:spiritual_poverty_ptochos", "relation": "포함 개념", "label": "", "type": "session-concept"}, {"source": "s01-mat5-3", "target": "concept:sabbatismos_true_rest", "relation": "포함 개념", "label": "", "type": "session-concept"}];
+
+const container = document.querySelector(".graph-container");
+const width = container.clientWidth || window.innerWidth;
+const height = container.clientHeight || (window.innerHeight - 70);
+
+const svg = d3.select("#graphSvg")
+  .attr("width", width)
+  .attr("height", height);
+
+const g = svg.append("g");
+const zoom = d3.zoom().scaleExtent([0.2, 4]).on("zoom", (e) => g.attr("transform", e.transform));
+svg.call(zoom);
+
+const simulation = d3.forceSimulation(nodesData)
+  .force("link", d3.forceLink(linksData).id(d => d.id).distance(140))
+  .force("charge", d3.forceManyBody().strength(-400))
+  .force("center", d3.forceCenter(width / 2, height / 2))
+  .force("collision", d3.forceCollide().radius(50));
+
+const link = g.append("g")
+  .selectAll("line")
+  .data(linksData)
+  .join("line")
+  .attr("class", d => "g-link " + (d.type || ""));
+
+const node = g.append("g")
+  .selectAll("circle")
+  .data(nodesData)
+  .join("circle")
+  .attr("class", d => "g-node " + d.group)
+  .attr("r", d => d.group === "session" ? 16 : 12)
+  .call(d3.drag()
+    .on("start", dragstarted)
+    .on("drag", dragged)
+    .on("end", dragended));
+
+const label = g.append("g")
+  .selectAll("text")
+  .data(nodesData)
+  .join("text")
+  .attr("class", "g-label")
+  .attr("dx", 18)
+  .attr("dy", 5)
+  .text(d => d.label);
+
+const tooltip = d3.select("#graphTooltip");
+node.on("mouseover", (event, d) => {
+  const desc = d.desc ? `<div style="margin-top:4px; color:var(--text-secondary);">${d.desc}</div>` : "";
+  const cat = d.category ? `<div style="font-size:0.75rem; color:var(--accent-color); font-weight:700; text-transform:uppercase;">${d.category}</div>` : "";
+  tooltip.html(`${cat}<strong>${d.label}</strong>${desc}`)
+    .style("left", (event.clientX + 14) + "px")
+    .style("top", (event.clientY + 14) + "px")
+    .style("display", "block");
+}).on("mouseout", () => {
+  tooltip.style("display", "none");
+}).on("click", (event, d) => {
+  if (d.url) window.location.href = d.url;
+});
+
+simulation.on("tick", () => {
+  link
+    .attr("x1", d => d.source.x)
+    .attr("y1", d => d.source.y)
+    .attr("x2", d => d.target.x)
+    .attr("y2", d => d.target.y);
+  node
+    .attr("cx", d => d.x)
+    .attr("cy", d => d.y);
+  label
+    .attr("x", d => d.x)
+    .attr("y", d => d.y);
+});
+
+function dragstarted(event, d) {
+  if (!event.active) simulation.alphaTarget(0.3).restart();
+  d.fx = d.x;
+  d.fy = d.y;
+}
+function dragged(event, d) {
+  d.fx = event.x;
+  d.fy = event.y;
+}
+function dragended(event, d) {
+  if (!event.active) simulation.alphaTarget(0);
+  d.fx = null;
+  d.fy = null;
+}
+
+function zoomIn() { svg.transition().duration(300).call(zoom.scaleBy, 1.3); }
+function zoomOut() { svg.transition().duration(300).call(zoom.scaleBy, 0.7); }
+function resetZoom() { svg.transition().duration(300).call(zoom.transform, d3.zoomIdentity); }
+</script>
+<script src="assets/app.js"></script>
+</body>
+</html>

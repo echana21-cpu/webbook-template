@@ -1,0 +1,56 @@
+{
+  "project": "WebBook-Template",
+  "title": "성경 강해 설교 웹북 (샘플)",
+  "title_en": "Expositional Sermon Webbook (Template)",
+  "author": "고은철 목사(그말씀하나교회)",
+  "author_en": "Pastor Eun-Chul Koh (That One Word Church)",
+  "description": "마크다운(.md) 설교 원고를 정적 웹북(NKRV 성경 팝업 + TKG 지식 그래프)으로 변환하는 범용 템플릿",
+  "description_en": "Static Sermon Webbook Template with NKRV Scripture Popups and TKG Knowledge Graph",
+  "book": {
+    "name": "샘플 코퍼스",
+    "english_name": "Sample Corpus",
+    "total_chapters": 2
+  },
+  "sections": [
+    {
+      "id": "s01-gen6-5-9",
+      "testament": "OT",
+      "book_name": "창세기",
+      "book_name_en": "Genesis",
+      "book_abbr": "창",
+      "series": "창세기",
+      "series_en": "Genesis",
+      "chapter": 6,
+      "verses": "5-9",
+      "title": "01. 창 6:5-9 하나님이 마음에 들어 하시는 삶",
+      "title_en": "01. Gen 6:5-9 A Life That Pleases God",
+      "passage": "창 6:5-9",
+      "passage_en": "Gen 6:5-9",
+      "source": "sources/genesis/Gen01-6-5-9.md",
+      "source_en": "sources/genesis_en/Gen01-6-5-9.md",
+      "output": "site/genesis/s01-gen6-5-9.html",
+      "output_en": "site/en/genesis/s01-gen6-5-9.html",
+      "status": "available"
+    },
+    {
+      "id": "s01-mat5-3",
+      "testament": "NT",
+      "book_name": "마태복음",
+      "book_name_en": "Matthew",
+      "book_abbr": "마",
+      "series": "산상수훈",
+      "series_en": "Sermon on the Mount",
+      "chapter": 5,
+      "verses": "3",
+      "title": "01. 마 5:3 심령이 가난한 자의 복 — 지금 천국을 소유하는 삶",
+      "title_en": "01. Matt 5:3 The Blessedness of the Poor in Spirit — Possessing the Kingdom of Heaven Now",
+      "passage": "마 5:3",
+      "passage_en": "Matt 5:3",
+      "source": "sources/matthew/Mat01-5-3.md",
+      "source_en": "sources/matthew_en/Mat01-5-3.md",
+      "output": "site/matthew/s01-mat5-3.html",
+      "output_en": "site/en/matthew/s01-mat5-3.html",
+      "status": "available"
+    }
+  ]
+}
