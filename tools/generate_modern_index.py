@@ -846,7 +846,7 @@ def build_modern_index_html(proj_root=None):
       currentChapter = ch;
       if (['genesis', 'numbers', 'leviticus', 'deuteronomy'].includes(ch)) {{
         currentCategory = 'ot';
-      }} else if (['matthew', 'sermon-mount', 'hebrews', 'peter', 'matthew10', 'colossians'].includes(ch)) {{
+      }} else if (['matthew', 'sermon-mount', 'hebrews', 'peter', 'matthew10', 'colossians', 'romans'].includes(ch)) {{
         currentCategory = 'nt';
       }} else if (ch === 'theology') {{
         currentCategory = 'theology';
